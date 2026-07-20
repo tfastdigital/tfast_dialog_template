@@ -42,7 +42,7 @@
         }
     .end annotation
 
-    .line 289
+    .line 301
     iput-object p1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$9;->val$configUrl:Ljava/lang/String;
 
     iput-object p2, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$9;->val$main:Landroid/os/Handler;
@@ -67,23 +67,23 @@
 .method public run()V
     .registers 4
 
-    .line 292
+    .line 304
     iget-object v0, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$9;->val$configUrl:Ljava/lang/String;
 
-    const/16 v1, 0x2710
+    const/16 v1, 0x2ee0
 
-    # invokes: Lcom/tfastdigital/dialog/TfastDialogHelper;->httpGet(Ljava/lang/String;I)Ljava/lang/String;
+    # invokes: Lcom/tfastdigital/dialog/TfastDialogHelper;->httpGetFirstOk(Ljava/lang/String;I)Ljava/lang/String;
     invoke-static {v0, v1}, Lcom/tfastdigital/dialog/TfastDialogHelper;->access$500(Ljava/lang/String;I)Ljava/lang/String;
 
     move-result-object v0
 
-    .line 293
+    .line 305
     # invokes: Lcom/tfastdigital/dialog/TfastDialogHelper;->parseJson(Ljava/lang/String;)Lorg/json/JSONObject;
     invoke-static {v0}, Lcom/tfastdigital/dialog/TfastDialogHelper;->access$600(Ljava/lang/String;)Lorg/json/JSONObject;
 
     move-result-object v0
 
-    .line 294
+    .line 306
     iget-object v1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$9;->val$main:Landroid/os/Handler;
 
     new-instance v2, Lcom/tfastdigital/dialog/TfastDialogHelper$9$1;
@@ -92,6 +92,6 @@
 
     invoke-virtual {v1, v2}, Landroid/os/Handler;->post(Ljava/lang/Runnable;)Z
 
-    .line 301
+    .line 313
     return-void
 .end method

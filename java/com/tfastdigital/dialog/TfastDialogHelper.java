@@ -41,10 +41,22 @@ import java.nio.charset.Charset;
  */
 public final class TfastDialogHelper {
 
-    public static final int DIALOG_VERSION = 3;
+    public static final int DIALOG_VERSION = 4;
 
+    /**
+     * Primary + fallbacks (public repos only — private GitHub raw returns 404 without token).
+     * Prefer refs/heads/main (most reliable for raw.githubusercontent.com).
+     */
     public static final String DEFAULT_CONFIG_URL =
-            "https://raw.githubusercontent.com/tfastdigital/tfast_dialog_template/main/config/update.json";
+            "https://raw.githubusercontent.com/tfastdigital/tfast_dialog_template/refs/heads/main/config/update.json";
+
+    private static final String[] CONFIG_URLS = new String[]{
+            "https://raw.githubusercontent.com/tfastdigital/tfast_dialog_template/refs/heads/main/config/update.json",
+            "https://raw.githubusercontent.com/tfastdigital/tfast_dialog_template/main/config/update.json",
+            "https://cdn.jsdelivr.net/gh/tfastdigital/tfast_dialog_template@main/config/update.json",
+            "https://raw.githubusercontent.com/tfastdigital/munowatch-update-panel/refs/heads/main/dialog/update.json",
+            "https://raw.githubusercontent.com/tfastdigital/munowatch-update-panel/main/dialog/update.json"
+    };
 
     private static final String DEFAULT_TELEGRAM = "https://t.me/tfasthub";
     private static final String DEFAULT_WHATSAPP =
@@ -289,7 +301,7 @@ public final class TfastDialogHelper {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String body = httpGet(configUrl, 10000);
+                String body = httpGetFirstOk(configUrl, 12000);
                 final JSONObject json = parseJson(body);
                 main.post(new Runnable() {
                     @Override
@@ -300,6 +312,24 @@ public final class TfastDialogHelper {
                 });
             }
         }, "tfast-config").start();
+    }
+
+    /** Try primary URL then public fallbacks (handles private-repo 404 / CDN lag). */
+    private static String httpGetFirstOk(String preferred, int timeoutMs) {
+        java.util.LinkedHashSet<String> urls = new java.util.LinkedHashSet<String>();
+        if (preferred != null && preferred.length() > 0) {
+            urls.add(preferred);
+        }
+        for (int i = 0; i < CONFIG_URLS.length; i++) {
+            urls.add(CONFIG_URLS[i]);
+        }
+        for (String u : urls) {
+            String body = httpGet(u, timeoutMs);
+            if (body != null && body.trim().length() > 2 && body.trim().startsWith("{")) {
+                return body;
+            }
+        }
+        return null;
     }
 
     /**
@@ -373,13 +403,13 @@ public final class TfastDialogHelper {
 
         if (raw == null) {
             if (status != null) {
-                status.setText("Offline — local defaults. Tap Check Update to retry.");
-                status.setTextColor(Color.parseColor("#9B9BB0"));
+                status.setText("Could not load update config. Check network, then tap Check for Updates.");
+                status.setTextColor(Color.parseColor("#FF6B35"));
             }
             // Always show check + update link offline for manual Tfast APK
             if (updateBtn != null) updateBtn.setVisibility(View.VISIBLE);
             if (checkBtn != null) checkBtn.setVisibility(View.VISIBLE);
-            if (fromCheck) toast(activity, "Offline — could not reach Tfast update server");
+            if (fromCheck) toast(activity, "Update server unreachable — retry");
             return;
         }
 
@@ -605,16 +635,32 @@ public final class TfastDialogHelper {
     private static String httpGet(String urlStr, int timeoutMs) {
         HttpURLConnection conn = null;
         try {
-            URL url = new URL(urlStr);
+            // Cache-bust so GitHub/CDN always returns fresh update.json
+            String busted = urlStr;
+            long t = System.currentTimeMillis();
+            if (urlStr.indexOf('?') >= 0) {
+                busted = urlStr + "&t=" + t;
+            } else {
+                busted = urlStr + "?t=" + t;
+            }
+            URL url = new URL(busted);
             conn = (HttpURLConnection) url.openConnection();
             conn.setConnectTimeout(timeoutMs);
             conn.setReadTimeout(timeoutMs);
             conn.setRequestMethod("GET");
-            conn.setRequestProperty("Accept", "application/json");
-            conn.setRequestProperty("User-Agent", "TfastDialog/" + DIALOG_VERSION);
+            conn.setUseCaches(false);
+            conn.setDefaultUseCaches(false);
+            conn.setRequestProperty("Accept", "application/json,text/plain,*/*");
+            conn.setRequestProperty("Cache-Control", "no-cache, no-store");
+            conn.setRequestProperty("Pragma", "no-cache");
+            conn.setRequestProperty("User-Agent",
+                    "Mozilla/5.0 (Linux; Android 13) TfastDialog/" + DIALOG_VERSION);
             conn.setInstanceFollowRedirects(true);
             int code = conn.getResponseCode();
-            InputStream in = (code >= 200 && code < 300) ? conn.getInputStream() : conn.getErrorStream();
+            if (code < 200 || code >= 300) {
+                return null;
+            }
+            InputStream in = conn.getInputStream();
             if (in == null) return null;
             BufferedReader br = new BufferedReader(
                     new InputStreamReader(in, Charset.forName("UTF-8")));

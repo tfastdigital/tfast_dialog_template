@@ -30,7 +30,7 @@
         }
     .end annotation
 
-    .line 226
+    .line 238
     iput-object p1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$4;->val$state:Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
@@ -43,7 +43,7 @@
 .method public get()Ljava/lang/String;
     .registers 2
 
-    .line 229
+    .line 241
     iget-object v0, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$4;->val$state:Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;
 
     iget-object v0, v0, Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;->telegramUrl:Ljava/lang/String;

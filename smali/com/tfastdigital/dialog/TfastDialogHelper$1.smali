@@ -34,7 +34,7 @@
         }
     .end annotation
 
-    .line 121
+    .line 133
     iput-object p1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$1;->val$state:Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;
 
     iput-object p2, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$1;->val$dialog:Landroid/app/AlertDialog;
@@ -51,7 +51,7 @@
 .method public onClick(Landroid/view/View;)V
     .registers 2
 
-    .line 124
+    .line 136
     iget-object p1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$1;->val$state:Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;
 
     iget-boolean p1, p1, Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;->killSwitch:Z
@@ -72,7 +72,7 @@
 
     goto :goto_26
 
-    .line 128
+    .line 140
     :cond_13
     :try_start_13
     iget-object p1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$1;->val$dialog:Landroid/app/AlertDialog;
@@ -81,20 +81,20 @@
     :try_end_18
     .catch Ljava/lang/Exception; {:try_start_13 .. :try_end_18} :catch_19
 
-    .line 130
+    .line 142
     goto :goto_1a
 
-    .line 129
+    .line 141
     :catch_19
     move-exception p1
 
-    .line 131
+    .line 143
     :goto_1a
     iget-object p1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$1;->val$onContinue:Ljava/lang/Runnable;
 
     if-eqz p1, :cond_25
 
-    .line 133
+    .line 145
     :try_start_1e
     iget-object p1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$1;->val$onContinue:Ljava/lang/Runnable;
 
@@ -102,19 +102,19 @@
     :try_end_23
     .catch Ljava/lang/Exception; {:try_start_1e .. :try_end_23} :catch_24
 
-    .line 135
+    .line 147
     goto :goto_25
 
-    .line 134
+    .line 146
     :catch_24
     move-exception p1
 
-    .line 137
+    .line 149
     :cond_25
     :goto_25
     return-void
 
-    .line 125
+    .line 137
     :cond_26
     :goto_26
     return-void

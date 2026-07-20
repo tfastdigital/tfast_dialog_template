@@ -32,7 +32,7 @@
         }
     .end annotation
 
-    .line 592
+    .line 622
     iput-object p1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$10;->val$activity:Landroid/app/Activity;
 
     iput-object p2, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$10;->val$msg:Ljava/lang/String;
@@ -47,7 +47,7 @@
 .method public run()V
     .registers 4
 
-    .line 596
+    .line 626
     :try_start_0
     iget-object v0, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$10;->val$activity:Landroid/app/Activity;
 
@@ -63,14 +63,14 @@
     :try_end_c
     .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_c} :catch_d
 
-    .line 598
+    .line 628
     goto :goto_e
 
-    .line 597
+    .line 627
     :catch_d
     move-exception v0
 
-    .line 599
+    .line 629
     :goto_e
     return-void
 .end method

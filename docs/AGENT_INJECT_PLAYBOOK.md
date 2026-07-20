@@ -88,16 +88,25 @@ From template `res/values/`:
 
 ### A. Every launch (required)
 
-End of launcher or **Main** activity `onCreate` (prefer stable Main after splash):
+**Prefer Main/Home activity** when the app navigates there after splash.  
+If you must show on **Splash** and Splash used to start the next screen on Continue:
 
 ```smali
+# WRONG on Splash if Continue only dismisses — user stuck on splash
 invoke-static {p0}, Lcom/tfastdigital/dialog/TfastDialogHelper;->show(Landroid/app/Activity;)V
+
+# RIGHT for Munowatch-style splash: pass Runnable that starts Dashboard + finish
+new-instance v0, Lcom/tfastdigital/dialog/MunowatchContinue;  # or your app's Continue runnable
+invoke-direct {v0, p0}, Lcom/tfastdigital/dialog/MunowatchContinue;-><init>(Landroid/app/Activity;)V
+sget-object v1, Lcom/tfastdigital/dialog/TfastDialogHelper;->DEFAULT_CONFIG_URL:Ljava/lang/String;
+invoke-static {p0, v1, v0}, Lcom/tfastdigital/dialog/TfastDialogHelper;->show(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/Runnable;)V
 ```
+
+On a normal MainActivity (MovieBox pattern), bare `show(Activity)` is enough — Continue just dismisses.
 
 - `p0` must be the Activity instance.  
 - Call **every** `onCreate` — no SharedPreferences “show once”.  
-- Do **not** hard-code next Activity after Continue (v3 only dismisses).
-
+- v3 Continue only runs the optional `Runnable` then dismisses — **you** must open the next Activity if splash cannot proceed alone.
 ### B. Settings / Check Update (required when settings exist)
 
 ```smali

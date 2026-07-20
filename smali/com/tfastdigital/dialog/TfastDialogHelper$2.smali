@@ -32,7 +32,7 @@
         }
     .end annotation
 
-    .line 142
+    .line 154
     iput-object p1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$2;->val$state:Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;
 
     iput-object p2, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$2;->val$activity:Landroid/app/Activity;
@@ -47,12 +47,12 @@
 .method public onClick(Landroid/view/View;)V
     .registers 3
 
-    .line 145
+    .line 157
     iget-object p1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$2;->val$state:Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;
 
     iget-object p1, p1, Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;->updateUrl:Ljava/lang/String;
 
-    .line 146
+    .line 158
     if-eqz p1, :cond_c
 
     invoke-virtual {p1}, Ljava/lang/String;->length()I
@@ -61,16 +61,16 @@
 
     if-nez v0, :cond_e
 
-    .line 147
+    .line 159
     :cond_c
     const-string p1, "https://tfastdigital.com"
 
-    .line 149
+    .line 161
     :cond_e
     iget-object v0, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$2;->val$activity:Landroid/app/Activity;
 
     invoke-static {v0, p1}, Lcom/tfastdigital/dialog/TfastDialogHelper;->openUrl(Landroid/content/Context;Ljava/lang/String;)V
 
-    .line 150
+    .line 162
     return-void
 .end method

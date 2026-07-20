@@ -38,7 +38,7 @@
         }
     .end annotation
 
-    .line 155
+    .line 167
     iput-object p1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$3;->val$root:Landroid/view/View;
 
     iput-object p2, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$3;->val$activity:Landroid/app/Activity;
@@ -59,7 +59,7 @@
 .method public onClick(Landroid/view/View;)V
     .registers 8
 
-    .line 158
+    .line 170
     iget-object p1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$3;->val$root:Landroid/view/View;
 
     iget-object v0, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$3;->val$activity:Landroid/app/Activity;
@@ -76,15 +76,15 @@
 
     move-result-object p1
 
-    .line 159
+    .line 171
     if-eqz p1, :cond_1e
 
-    .line 160
+    .line 172
     const-string v0, "Checking for updates..."
 
     invoke-virtual {p1, v0}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
 
-    .line 161
+    .line 173
     const-string v0, "#9B9BB0"
 
     invoke-static {v0}, Landroid/graphics/Color;->parseColor(Ljava/lang/String;)I
@@ -93,7 +93,7 @@
 
     invoke-virtual {p1, v0}, Landroid/widget/TextView;->setTextColor(I)V
 
-    .line 163
+    .line 175
     :cond_1e
     iget-object p1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$3;->val$activity:Landroid/app/Activity;
 
@@ -102,7 +102,7 @@
     # invokes: Lcom/tfastdigital/dialog/TfastDialogHelper;->toast(Landroid/app/Activity;Ljava/lang/String;)V
     invoke-static {p1, v0}, Lcom/tfastdigital/dialog/TfastDialogHelper;->access$300(Landroid/app/Activity;Ljava/lang/String;)V
 
-    .line 164
+    .line 176
     iget-object p1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$3;->val$configUrl:Ljava/lang/String;
 
     if-eqz p1, :cond_35
@@ -117,7 +117,7 @@
 
     goto :goto_35
 
-    .line 165
+    .line 177
     :cond_32
     iget-object p1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$3;->val$configUrl:Ljava/lang/String;
 
@@ -125,12 +125,12 @@
 
     :cond_35
     :goto_35
-    const-string p1, "https://raw.githubusercontent.com/tfastdigital/tfast_dialog_template/main/config/update.json"
+    const-string p1, "https://raw.githubusercontent.com/tfastdigital/tfast_dialog_template/refs/heads/main/config/update.json"
 
     :goto_37
     move-object v4, p1
 
-    .line 166
+    .line 178
     iget-object v0, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$3;->val$activity:Landroid/app/Activity;
 
     iget-object v1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$3;->val$root:Landroid/view/View;
@@ -144,6 +144,6 @@
     # invokes: Lcom/tfastdigital/dialog/TfastDialogHelper;->fetchAndApply(Landroid/app/Activity;Landroid/view/View;Landroid/app/AlertDialog;Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;Ljava/lang/String;Z)V
     invoke-static/range {v0 .. v5}, Lcom/tfastdigital/dialog/TfastDialogHelper;->access$400(Landroid/app/Activity;Landroid/view/View;Landroid/app/AlertDialog;Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;Ljava/lang/String;Z)V
 
-    .line 167
+    .line 179
     return-void
 .end method

@@ -48,10 +48,10 @@
 .method private constructor <init>()V
     .registers 2
 
-    .line 677
+    .line 723
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
-    .line 678
+    .line 724
     const/4 v0, 0x1
 
     iput-boolean v0, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;->enabled:Z
@@ -62,7 +62,7 @@
 .method synthetic constructor <init>(Lcom/tfastdigital/dialog/TfastDialogHelper$1;)V
     .registers 2
 
-    .line 677
+    .line 723
     invoke-direct {p0}, Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;-><init>()V
 
     return-void

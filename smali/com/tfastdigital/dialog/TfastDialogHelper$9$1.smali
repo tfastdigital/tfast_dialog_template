@@ -32,7 +32,7 @@
         }
     .end annotation
 
-    .line 294
+    .line 306
     iput-object p1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$9$1;->this$0:Lcom/tfastdigital/dialog/TfastDialogHelper$9;
 
     iput-object p2, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$9$1;->val$json:Lorg/json/JSONObject;
@@ -47,7 +47,7 @@
 .method public run()V
     .registers 8
 
-    .line 297
+    .line 309
     iget-object v0, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$9$1;->this$0:Lcom/tfastdigital/dialog/TfastDialogHelper$9;
 
     iget-object v0, v0, Lcom/tfastdigital/dialog/TfastDialogHelper$9;->val$activity:Landroid/app/Activity;
@@ -60,7 +60,7 @@
 
     return-void
 
-    .line 298
+    .line 310
     :cond_b
     iget-object v0, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$9$1;->this$0:Lcom/tfastdigital/dialog/TfastDialogHelper$9;
 
@@ -87,6 +87,6 @@
     # invokes: Lcom/tfastdigital/dialog/TfastDialogHelper;->applyConfig(Landroid/app/Activity;Landroid/view/View;Landroid/app/AlertDialog;Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;Lorg/json/JSONObject;Z)V
     invoke-static/range {v1 .. v6}, Lcom/tfastdigital/dialog/TfastDialogHelper;->access$700(Landroid/app/Activity;Landroid/view/View;Landroid/app/AlertDialog;Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;Lorg/json/JSONObject;Z)V
 
-    .line 299
+    .line 311
     return-void
 .end method
