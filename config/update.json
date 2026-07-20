@@ -1,32 +1,69 @@
 {
-  "dialog_version": 2,
-  "min_dialog_version": 1,
-  "enabled": true,
+  "dialog_version": 3,
+  "notes": "Multi-app control plane. global applies to all. apps.<package> overrides for that APK only.",
 
-  "force_update": false,
-  "block_entry": false,
-  "prevent_entry": false,
-  "block_app": false,
-  "hide_continue_when_blocked": true,
-  "show_update_button": false,
+  "global": {
+    "enabled": true,
+    "kill_switch": false,
+    "mode_kill_switch": false,
+    "force_update": false,
+    "block_entry": false,
+    "hide_continue_when_blocked": true,
+    "show_update_button": true,
 
-  "title": "Tfast Digital Agency",
-  "subtitle": "Official channels · updates · support",
-  "credits": "Powered by tfastdigital.com © 2026",
-  "message": "You're up to date · join our channels for new releases",
-  "update_message": "A new version is available. Please update to continue.",
-  "outdated_message": "This build is outdated. Please download the latest APK.",
-  "continue_label": "Continue to App",
-  "update_label": "Download Update",
-  "blocked_label": "Update required",
+    "title": "Tfast Digital Agency",
+    "subtitle": "Official channels · updates · support",
+    "credits": "Powered by tfastdigital.com © 2026",
+    "message": "You're up to date · join our channels for new releases",
+    "kill_message": "This app is temporarily disabled by Tfast Digital. Use Download Update for the latest APK or info.",
+    "update_message": "A new version is available. Tap Download Update.",
+    "outdated_message": "This build is outdated. Please download the latest APK.",
+    "continue_label": "Continue to App",
+    "update_label": "Download Update",
+    "check_update_label": "Check for Updates",
+    "blocked_label": "Update required",
 
-  "update_url": "https://github.com/tfastdigital/tfast_dialog_template/releases/latest",
-  "apk_url": "https://github.com/tfastdigital/tfast_dialog_template/releases/latest",
+    "telegram": "https://t.me/tfasthub",
+    "whatsapp": "https://whatsapp.com/channel/0029VaAYznPK5cDIXJa9nW1a",
+    "tiktok": "https://www.tiktok.com/@tfasthub",
+    "website": "https://tfastdigital.com",
 
-  "telegram": "https://t.me/tfasthub",
-  "whatsapp": "https://whatsapp.com/channel/0029VaAYznPK5cDIXJa9nW1a",
-  "tiktok": "https://www.tiktok.com/@tfasthub",
-  "website": "https://tfastdigital.com",
+    "min_dialog_version": 1
+  },
 
-  "notes": "Edit this file on GitHub main branch. All injected apps pull it on every dialog open."
+  "apps": {
+    "default": {
+      "app_name": "Tfast Mod",
+      "force_update": false,
+      "kill_switch": false,
+      "update_url": "https://github.com/tfastdigital/tfast_dialog_template/releases/latest",
+      "apk_url": "https://github.com/tfastdigital/tfast_dialog_template/releases/latest"
+    },
+
+    "com.community.mbox.tv": {
+      "app_name": "MovieBox TV Premium",
+      "force_update": false,
+      "block_entry": false,
+      "kill_switch": false,
+      "min_version_code": 1,
+      "latest_version_code": 50040010,
+      "latest_version_name": "1.1.5.0711.03-tfast",
+      "message": "MovieBox TV · Tfast Digital build. Official updates disabled.",
+      "update_url": "https://github.com/tfastdigital/tfast_dialog_template/releases/latest",
+      "apk_url": "https://github.com/tfastdigital/tfast_dialog_template/releases/latest",
+      "update_label": "Download Tfast APK",
+      "check_update_label": "Check for Updates"
+    },
+
+    "com.munowatch.lite": {
+      "app_name": "Munowatch Lite",
+      "force_update": false,
+      "kill_switch": false,
+      "latest_version_code": 1,
+      "latest_version_name": "3.1",
+      "message": "Munowatch · managed by Tfast Digital",
+      "update_url": "https://github.com/tfastdigital/tfast_dialog_template/releases/latest",
+      "apk_url": "https://github.com/tfastdigital/tfast_dialog_template/releases/latest"
+    }
+  }
 }

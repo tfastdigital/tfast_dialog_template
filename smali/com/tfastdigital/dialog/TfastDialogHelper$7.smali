@@ -8,7 +8,7 @@
 
 # annotations
 .annotation system Ldalvik/annotation/EnclosingMethod;
-    value = Lcom/tfastdigital/dialog/TfastDialogHelper;->bindUrlButton(Landroid/app/Activity;Landroid/view/View;Ljava/lang/String;Lcom/tfastdigital/dialog/TfastDialogHelper$UrlProvider;)V
+    value = Lcom/tfastdigital/dialog/TfastDialogHelper;->wireSocial(Landroid/app/Activity;Landroid/view/View;Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;)V
 .end annotation
 
 .annotation system Ldalvik/annotation/InnerClass;
@@ -20,11 +20,11 @@
 # instance fields
 .field final synthetic val$activity:Landroid/app/Activity;
 
-.field final synthetic val$provider:Lcom/tfastdigital/dialog/TfastDialogHelper$UrlProvider;
+.field final synthetic val$state:Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;
 
 
 # direct methods
-.method constructor <init>(Landroid/app/Activity;Lcom/tfastdigital/dialog/TfastDialogHelper$UrlProvider;)V
+.method constructor <init>(Landroid/app/Activity;Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;)V
     .registers 3
     .annotation system Ldalvik/annotation/Signature;
         value = {
@@ -32,10 +32,10 @@
         }
     .end annotation
 
-    .line 209
+    .line 246
     iput-object p1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$7;->val$activity:Landroid/app/Activity;
 
-    iput-object p2, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$7;->val$provider:Lcom/tfastdigital/dialog/TfastDialogHelper$UrlProvider;
+    iput-object p2, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$7;->val$state:Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
@@ -47,17 +47,27 @@
 .method public onClick(Landroid/view/View;)V
     .registers 3
 
-    .line 212
+    .line 249
     iget-object p1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$7;->val$activity:Landroid/app/Activity;
 
-    iget-object v0, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$7;->val$provider:Lcom/tfastdigital/dialog/TfastDialogHelper$UrlProvider;
+    iget-object v0, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$7;->val$state:Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;
 
-    invoke-interface {v0}, Lcom/tfastdigital/dialog/TfastDialogHelper$UrlProvider;->get()Ljava/lang/String;
+    iget-object v0, v0, Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;->websiteUrl:Ljava/lang/String;
 
-    move-result-object v0
+    if-eqz v0, :cond_d
 
+    iget-object v0, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$7;->val$state:Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;
+
+    iget-object v0, v0, Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;->websiteUrl:Ljava/lang/String;
+
+    goto :goto_f
+
+    :cond_d
+    const-string v0, "https://tfastdigital.com"
+
+    :goto_f
     invoke-static {p1, v0}, Lcom/tfastdigital/dialog/TfastDialogHelper;->openUrl(Landroid/content/Context;Ljava/lang/String;)V
 
-    .line 213
+    .line 250
     return-void
 .end method

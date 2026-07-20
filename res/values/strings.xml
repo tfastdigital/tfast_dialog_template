@@ -1,15 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="tfast_title">Tfast Digital Agency</string>
-    <string name="tfast_subtitle">Official channels · updates · support</string>
-    <string name="tfast_credits">Powered by tfastdigital.com © 2026</string>
-    <string name="tfast_btn_telegram_label">Telegram Channel</string>
-    <string name="tfast_btn_whatsapp_label">WhatsApp Channel</string>
-    <string name="tfast_btn_tiktok_label">TikTok @tfasthub</string>
+    <string name="tfast_subtitle">Official channels - updates - support</string>
+    <string name="tfast_credits">Powered by tfastdigital.com (c) 2026</string>
+    <string name="tfast_btn_telegram_label">Telegram</string>
+    <string name="tfast_btn_whatsapp_label">WhatsApp</string>
+    <string name="tfast_btn_tiktok_label">TikTok</string>
     <string name="tfast_btn_continue_label">Continue to App</string>
     <string name="tfast_btn_update_label">Download Update</string>
-    <string name="tfast_status_checking">Checking for updates…</string>
-    <string name="tfast_status_blocked">Access paused — please update to continue.</string>
+    <string name="tfast_btn_check_update_label">Check for Updates</string>
+    <string name="tfast_status_checking">Checking for updates...</string>
+    <string name="tfast_status_blocked">Access paused - please update to continue.</string>
     <string name="tfast_status_force">A required update is available.</string>
-    <string name="tfast_status_ok">You\'re on the latest build.</string>
+    <string name="tfast_status_ok">You are on the latest build.</string>
 </resources>

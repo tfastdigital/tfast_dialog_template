@@ -8,7 +8,7 @@
 
 # annotations
 .annotation system Ldalvik/annotation/EnclosingMethod;
-    value = Lcom/tfastdigital/dialog/TfastDialogHelper;->show(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/Runnable;)V
+    value = Lcom/tfastdigital/dialog/TfastDialogHelper;->show(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/Runnable;Z)V
 .end annotation
 
 .annotation system Ldalvik/annotation/InnerClass;
@@ -34,7 +34,7 @@
         }
     .end annotation
 
-    .line 105
+    .line 121
     iput-object p1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$1;->val$state:Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;
 
     iput-object p2, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$1;->val$dialog:Landroid/app/AlertDialog;
@@ -51,65 +51,71 @@
 .method public onClick(Landroid/view/View;)V
     .registers 2
 
-    .line 108
+    .line 124
+    iget-object p1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$1;->val$state:Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;
+
+    iget-boolean p1, p1, Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;->killSwitch:Z
+
+    if-nez p1, :cond_26
+
     iget-object p1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$1;->val$state:Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;
 
     iget-boolean p1, p1, Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;->blockEntry:Z
 
-    if-nez p1, :cond_20
+    if-nez p1, :cond_26
 
     iget-object p1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$1;->val$state:Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;
 
     iget-boolean p1, p1, Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;->forceUpdate:Z
 
-    if-eqz p1, :cond_d
+    if-eqz p1, :cond_13
 
-    goto :goto_20
+    goto :goto_26
 
-    .line 112
-    :cond_d
-    :try_start_d
+    .line 128
+    :cond_13
+    :try_start_13
     iget-object p1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$1;->val$dialog:Landroid/app/AlertDialog;
 
     invoke-virtual {p1}, Landroid/app/AlertDialog;->dismiss()V
-    :try_end_12
-    .catch Ljava/lang/Exception; {:try_start_d .. :try_end_12} :catch_13
+    :try_end_18
+    .catch Ljava/lang/Exception; {:try_start_13 .. :try_end_18} :catch_19
 
-    .line 114
-    goto :goto_14
+    .line 130
+    goto :goto_1a
 
-    .line 113
-    :catch_13
+    .line 129
+    :catch_19
     move-exception p1
 
-    .line 115
-    :goto_14
+    .line 131
+    :goto_1a
     iget-object p1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$1;->val$onContinue:Ljava/lang/Runnable;
 
-    if-eqz p1, :cond_1f
+    if-eqz p1, :cond_25
 
-    .line 117
-    :try_start_18
+    .line 133
+    :try_start_1e
     iget-object p1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$1;->val$onContinue:Ljava/lang/Runnable;
 
     invoke-interface {p1}, Ljava/lang/Runnable;->run()V
-    :try_end_1d
-    .catch Ljava/lang/Exception; {:try_start_18 .. :try_end_1d} :catch_1e
+    :try_end_23
+    .catch Ljava/lang/Exception; {:try_start_1e .. :try_end_23} :catch_24
 
-    .line 119
-    goto :goto_1f
+    .line 135
+    goto :goto_25
 
-    .line 118
-    :catch_1e
+    .line 134
+    :catch_24
     move-exception p1
 
-    .line 121
-    :cond_1f
-    :goto_1f
+    .line 137
+    :cond_25
+    :goto_25
     return-void
 
-    .line 109
-    :cond_20
-    :goto_20
+    .line 125
+    :cond_26
+    :goto_26
     return-void
 .end method

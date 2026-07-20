@@ -1,0 +1,35 @@
+{
+  "_comment": "Copy fields into update.json. Examples for operators.",
+
+  "example_kill_switch_moviebox_only": {
+    "apps": {
+      "com.community.mbox.tv": {
+        "kill_switch": true,
+        "kill_message": "MovieBox TV is paused. Download the new Tfast build.",
+        "apk_url": "https://github.com/tfastdigital/YOUR_REPO/releases/download/vX/MovieBoxTv.apk",
+        "update_label": "Download MovieBox TV"
+      }
+    }
+  },
+
+  "example_force_update_with_link": {
+    "apps": {
+      "com.community.mbox.tv": {
+        "force_update": true,
+        "block_entry": true,
+        "latest_version_code": 50040099,
+        "latest_version_name": "1.2.0-tfast",
+        "message": "Required update — tap Download Update to get the new APK.",
+        "apk_url": "https://github.com/tfastdigital/YOUR_REPO/releases/download/vX/MovieBoxTv.apk",
+        "update_label": "Download Update"
+      }
+    }
+  },
+
+  "example_global_kill_all_apps": {
+    "global": {
+      "kill_switch": true,
+      "kill_message": "All Tfast mods paused for maintenance."
+    }
+  }
+}

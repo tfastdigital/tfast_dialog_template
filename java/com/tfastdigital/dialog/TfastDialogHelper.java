@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Handler;
@@ -12,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -20,31 +23,29 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 
 /**
- * Tfast Brand Dialog + GitHub remote config.
+ * Tfast Brand Dialog v3 — multi-app GitHub control plane.
  *
- * Package: com.tfastdigital.dialog (works in ANY host APK — not tied to one app).
- * Always shows every launch (no “show once” prefs).
- *
- * Remote config (default):
+ * Shared config URL (one file for all mods):
  *   https://raw.githubusercontent.com/tfastdigital/tfast_dialog_template/main/config/update.json
  *
- * Inject call (smali):
- *   invoke-static {p0}, Lcom/tfastdigital/dialog/TfastDialogHelper;->show(Landroid/app/Activity;)V
+ * Per-app block under "apps"."&lt;packageName&gt;" + global defaults.
+ * Kill switch / force update / update links are resolved per package.
  *
- * Requires INTERNET permission in the host APK for remote updates.
+ * Public API:
+ *   show(activity)              — every launch (branding + remote gates)
+ *   showCheckUpdate(activity)   — Settings "Check Update" / dialog button
+ *   openUrl(context, url)
  */
 public final class TfastDialogHelper {
 
-    /** Bump when shipping template code changes (local client version). */
-    public static final int DIALOG_VERSION = 2;
+    public static final int DIALOG_VERSION = 3;
 
     public static final String DEFAULT_CONFIG_URL =
             "https://raw.githubusercontent.com/tfastdigital/tfast_dialog_template/main/config/update.json";
 
-    // Built-in fallbacks if network/config fails
     private static final String DEFAULT_TELEGRAM = "https://t.me/tfasthub";
     private static final String DEFAULT_WHATSAPP =
             "https://whatsapp.com/channel/0029VaAYznPK5cDIXJa9nW1a";
@@ -54,29 +55,39 @@ public final class TfastDialogHelper {
     private TfastDialogHelper() {
     }
 
-    /** Show branded dialog every time; fetch remote config in background. */
+    /** Full brand dialog every open. */
     public static void show(final Activity activity) {
-        show(activity, DEFAULT_CONFIG_URL, null);
+        show(activity, DEFAULT_CONFIG_URL, null, false);
     }
 
-    /** Show with custom config URL (per-app update channel). */
     public static void show(final Activity activity, final String configUrl) {
-        show(activity, configUrl, null);
+        show(activity, configUrl, null, false);
+    }
+
+    public static void show(final Activity activity, final String configUrl, final Runnable onContinue) {
+        show(activity, configUrl, onContinue, false);
     }
 
     /**
-     * @param activity   host activity (usually launcher / main)
-     * @param configUrl  raw JSON URL (GitHub raw, CDN, etc.)
-     * @param onContinue optional callback after user taps Continue (may be null)
+     * Settings / manual "Check for updates" — same UI, status line emphasizes version check.
      */
-    public static void show(final Activity activity, final String configUrl, final Runnable onContinue) {
+    public static void showCheckUpdate(final Activity activity) {
+        show(activity, DEFAULT_CONFIG_URL, null, true);
+    }
+
+    public static void showCheckUpdate(final Activity activity, final String configUrl) {
+        show(activity, configUrl, null, true);
+    }
+
+    public static void show(final Activity activity, final String configUrl,
+                            final Runnable onContinue, final boolean checkUpdateMode) {
         if (activity == null || activity.isFinishing()) {
             return;
         }
         try {
             final int layoutId = resId(activity, "layout", "tfast_brand_dialog");
             if (layoutId == 0) {
-                // Fallback: layout missing — do not crash host app
+                toast(activity, "Tfast dialog layout missing");
                 return;
             }
 
@@ -86,10 +97,14 @@ public final class TfastDialogHelper {
             state.whatsappUrl = DEFAULT_WHATSAPP;
             state.tiktokUrl = DEFAULT_TIKTOK;
             state.updateUrl = DEFAULT_WEBSITE;
+            state.websiteUrl = DEFAULT_WEBSITE;
             state.blockEntry = false;
             state.forceUpdate = false;
+            state.killSwitch = false;
             state.enabled = true;
+            state.checkUpdateMode = checkUpdateMode;
 
+            fillAppInfo(activity, root, state);
             wireSocial(activity, root, state);
             applyLogo(activity, root);
 
@@ -100,13 +115,14 @@ public final class TfastDialogHelper {
 
             final View continueBtn = find(root, activity, "tfast_btn_continue");
             final View updateBtn = find(root, activity, "tfast_btn_update");
+            final View checkBtn = find(root, activity, "tfast_btn_check_update");
 
             if (continueBtn != null) {
                 continueBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (state.blockEntry || state.forceUpdate) {
-                            return; // hard gate — cannot enter
+                        if (state.killSwitch || state.blockEntry || state.forceUpdate) {
+                            return;
                         }
                         try {
                             dialog.dismiss();
@@ -126,12 +142,32 @@ public final class TfastDialogHelper {
                 updateBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        openUrl(activity, state.updateUrl);
+                        String url = state.updateUrl;
+                        if (url == null || url.length() == 0) {
+                            url = DEFAULT_WEBSITE;
+                        }
+                        openUrl(activity, url);
                     }
                 });
             }
 
-            // Dim window for premium look
+            if (checkBtn != null) {
+                checkBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        TextView status = asText(find(root, activity, "tfast_status"));
+                        if (status != null) {
+                            status.setText("Checking for updates...");
+                            status.setTextColor(Color.parseColor("#9B9BB0"));
+                        }
+                        toast(activity, "Checking Tfast updates...");
+                        String url = (configUrl == null || configUrl.length() == 0)
+                                ? DEFAULT_CONFIG_URL : configUrl;
+                        fetchAndApply(activity, root, dialog, state, url, true);
+                    }
+                });
+            }
+
             try {
                 dialog.show();
                 Window w = dialog.getWindow();
@@ -143,13 +179,46 @@ public final class TfastDialogHelper {
                 return;
             }
 
-            // Always pull remote config (updates, block, copy, links)
             final String url = (configUrl == null || configUrl.length() == 0)
                     ? DEFAULT_CONFIG_URL : configUrl;
-            fetchAndApply(activity, root, dialog, state, url);
+            fetchAndApply(activity, root, dialog, state, url, checkUpdateMode);
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private static void fillAppInfo(Activity activity, View root, DialogState state) {
+        try {
+            String pkg = activity.getPackageName();
+            state.packageName = pkg;
+            PackageManager pm = activity.getPackageManager();
+            CharSequence label = pm.getApplicationLabel(pm.getApplicationInfo(pkg, 0));
+            state.appName = label != null ? label.toString() : pkg;
+            PackageInfo pi;
+            if (android.os.Build.VERSION.SDK_INT >= 33) {
+                pi = pm.getPackageInfo(pkg, PackageManager.PackageInfoFlags.of(0));
+            } else {
+                pi = pm.getPackageInfo(pkg, 0);
+            }
+            state.versionName = pi.versionName != null ? pi.versionName : "?";
+            long vc = android.os.Build.VERSION.SDK_INT >= 28 ? pi.getLongVersionCode() : pi.versionCode;
+            state.versionCode = vc;
+
+            TextView info = asText(find(root, activity, "tfast_app_info"));
+            if (info != null) {
+                info.setText(state.appName + "  v" + state.versionName
+                        + " (" + state.versionCode + ")\n" + pkg);
+            }
+            TextView subtitle = asText(find(root, activity, "tfast_subtitle"));
+            if (subtitle != null && !state.checkUpdateMode) {
+                // leave layout default until remote applies
+            }
+        } catch (Exception e) {
+            TextView info = asText(find(root, activity, "tfast_app_info"));
+            if (info != null) {
+                info.setText(activity.getPackageName());
+            }
         }
     }
 
@@ -172,13 +241,12 @@ public final class TfastDialogHelper {
                 return state.tiktokUrl;
             }
         });
-        // Credits row → website
         final View credits = find(root, activity, "tfast_credits");
         if (credits != null) {
             credits.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    openUrl(activity, DEFAULT_WEBSITE);
+                    openUrl(activity, state.websiteUrl != null ? state.websiteUrl : DEFAULT_WEBSITE);
                 }
             });
         }
@@ -216,46 +284,256 @@ public final class TfastDialogHelper {
 
     private static void fetchAndApply(final Activity activity, final View root,
                                       final AlertDialog dialog, final DialogState state,
-                                      final String configUrl) {
+                                      final String configUrl, final boolean fromCheck) {
         final Handler main = new Handler(Looper.getMainLooper());
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String body = httpGet(configUrl, 8000);
+                String body = httpGet(configUrl, 10000);
                 final JSONObject json = parseJson(body);
                 main.post(new Runnable() {
                     @Override
                     public void run() {
                         if (activity.isFinishing()) return;
-                        applyConfig(activity, root, dialog, state, json);
+                        applyConfig(activity, root, dialog, state, json, fromCheck);
                     }
                 });
             }
         }, "tfast-config").start();
     }
 
+    /**
+     * Resolve multi-app JSON:
+     * {
+     *   "global": { ... },
+     *   "apps": {
+     *     "com.community.mbox.tv": { "app_name":"MovieBox TV", "force_update":true, ... },
+     *     "default": { ... }
+     *   },
+     *   // legacy flat keys still work as global defaults
+     * }
+     */
+    private static JSONObject resolveAppConfig(Activity activity, JSONObject root) {
+        if (root == null) return null;
+        try {
+            JSONObject merged = new JSONObject();
+            // 1) legacy flat keys on root
+            copyJson(root, merged);
+            // 2) global object
+            if (root.has("global") && root.opt("global") instanceof JSONObject) {
+                copyJson(root.getJSONObject("global"), merged);
+            }
+            // 3) apps.default then apps.<package>
+            if (root.has("apps") && root.opt("apps") instanceof JSONObject) {
+                JSONObject apps = root.getJSONObject("apps");
+                if (apps.has("default") && apps.opt("default") instanceof JSONObject) {
+                    copyJson(apps.getJSONObject("default"), merged);
+                }
+                String pkg = activity.getPackageName();
+                if (apps.has(pkg) && apps.opt(pkg) instanceof JSONObject) {
+                    copyJson(apps.getJSONObject(pkg), merged);
+                }
+                // alias keys (app_id field match)
+                // already handled by package key
+            }
+            return merged;
+        } catch (Exception e) {
+            return root;
+        }
+    }
+
+    private static void copyJson(JSONObject from, JSONObject to) {
+        if (from == null || to == null) return;
+        try {
+            java.util.Iterator<String> keys = from.keys();
+            while (keys.hasNext()) {
+                String k = keys.next();
+                if ("apps".equals(k) || "global".equals(k) || "notes".equals(k)) {
+                    continue;
+                }
+                to.put(k, from.get(k));
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
     private static void applyConfig(Activity activity, View root, AlertDialog dialog,
-                                    DialogState state, JSONObject json) {
+                                    DialogState state, JSONObject raw, boolean fromCheck) {
         TextView status = asText(find(root, activity, "tfast_status"));
         TextView title = asText(find(root, activity, "tfast_title"));
         TextView subtitle = asText(find(root, activity, "tfast_subtitle"));
         TextView credits = asText(find(root, activity, "tfast_credits"));
+        TextView appInfo = asText(find(root, activity, "tfast_app_info"));
         View continueBtn = find(root, activity, "tfast_btn_continue");
         View updateBtn = find(root, activity, "tfast_btn_update");
+        View checkBtn = find(root, activity, "tfast_btn_check_update");
         TextView continueTv = asText(continueBtn);
         TextView updateTv = asText(updateBtn);
+        TextView checkTv = asText(checkBtn);
 
-        if (json == null) {
+        if (raw == null) {
             if (status != null) {
-                status.setText("Offline — using local defaults");
+                status.setText("Offline — local defaults. Tap Check Update to retry.");
                 status.setTextColor(Color.parseColor("#9B9BB0"));
             }
+            // Always show check + update link offline for manual Tfast APK
+            if (updateBtn != null) updateBtn.setVisibility(View.VISIBLE);
+            if (checkBtn != null) checkBtn.setVisibility(View.VISIBLE);
+            if (fromCheck) toast(activity, "Offline — could not reach Tfast update server");
             return;
         }
 
+        JSONObject json = resolveAppConfig(activity, raw);
+        if (json == null) json = raw;
+
         try {
-            // Master kill-switch: hide dialog entirely
-            if (json.has("enabled") && !json.optBoolean("enabled", true)) {
+            // Dialog branding kill (hide dialog only) — NOT the same as kill_switch
+            boolean dialogEnabled = json.optBoolean("enabled", true);
+            if (!dialogEnabled && !fromCheck) {
+                // If kill_switch is on we still need to block — handle below after merge
+            }
+
+            state.killSwitch = json.optBoolean("kill_switch", false)
+                    || json.optBoolean("mode_kill_switch", false)
+                    || json.optBoolean("kill", false);
+            state.forceUpdate = json.optBoolean("force_update", false);
+            state.blockEntry = json.optBoolean("block_entry", false)
+                    || json.optBoolean("prevent_entry", false)
+                    || json.optBoolean("block_app", false);
+
+            if (json.has("telegram")) state.telegramUrl = json.optString("telegram", state.telegramUrl);
+            if (json.has("whatsapp")) state.whatsappUrl = json.optString("whatsapp", state.whatsappUrl);
+            if (json.has("tiktok")) state.tiktokUrl = json.optString("tiktok", state.tiktokUrl);
+            if (json.has("website")) state.websiteUrl = json.optString("website", state.websiteUrl);
+            if (json.has("update_url")) state.updateUrl = json.optString("update_url", state.updateUrl);
+            if (json.has("apk_url")) {
+                String apk = json.optString("apk_url", "");
+                if (apk.length() > 0) state.updateUrl = apk;
+            }
+            if (json.has("download_url")) {
+                String dl = json.optString("download_url", "");
+                if (dl.length() > 0) state.updateUrl = dl;
+            }
+
+            String remoteAppName = json.optString("app_name", json.optString("name", ""));
+            if (remoteAppName.length() > 0) {
+                state.appName = remoteAppName;
+            }
+
+            // Version compare vs this install
+            long minVc = json.optLong("min_version_code", json.optLong("min_version", 0));
+            long latestVc = json.optLong("latest_version_code", json.optLong("version_code", 0));
+            String latestVn = json.optString("latest_version_name",
+                    json.optString("version_name", ""));
+
+            if (minVc > 0 && state.versionCode > 0 && state.versionCode < minVc) {
+                state.forceUpdate = true;
+                state.blockEntry = true;
+            }
+            boolean updateAvailable = false;
+            if (latestVc > 0 && state.versionCode > 0 && state.versionCode < latestVc) {
+                updateAvailable = true;
+            }
+
+            int minDialog = json.optInt("min_dialog_version", 0);
+            if (minDialog > DIALOG_VERSION) {
+                state.forceUpdate = true;
+                state.blockEntry = true;
+            }
+
+            // Kill switch: hard block + force update CTA
+            if (state.killSwitch) {
+                state.forceUpdate = true;
+                state.blockEntry = true;
+            }
+
+            if (title != null) {
+                if (json.has("title")) {
+                    title.setText(json.optString("title"));
+                } else if (state.killSwitch) {
+                    title.setText("Service paused");
+                }
+            }
+            if (subtitle != null) {
+                if (json.has("subtitle")) {
+                    subtitle.setText(json.optString("subtitle"));
+                } else if (remoteAppName.length() > 0) {
+                    subtitle.setText(remoteAppName + " · Tfast Digital");
+                }
+            }
+            if (credits != null && json.has("credits")) {
+                credits.setText(json.optString("credits"));
+            }
+            if (continueTv != null && json.has("continue_label")) {
+                continueTv.setText(json.optString("continue_label", "Continue to App"));
+            }
+            if (updateTv != null) {
+                updateTv.setText(json.optString("update_label", "Download Update"));
+            }
+            if (checkTv != null) {
+                checkTv.setText(json.optString("check_update_label", "Check for Updates"));
+            }
+
+            if (appInfo != null) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(state.appName != null ? state.appName : "App");
+                sb.append("  v").append(state.versionName).append(" (").append(state.versionCode).append(")");
+                if (latestVn.length() > 0 || latestVc > 0) {
+                    sb.append("\nLatest: ");
+                    if (latestVn.length() > 0) sb.append("v").append(latestVn);
+                    if (latestVc > 0) sb.append(" (").append(latestVc).append(")");
+                }
+                sb.append("\n").append(state.packageName != null ? state.packageName : "");
+                appInfo.setText(sb.toString());
+            }
+
+            String message = json.optString("message", "");
+            if (message.length() == 0) {
+                message = json.optString("update_message", "");
+            }
+            if (state.killSwitch) {
+                message = json.optString("kill_message",
+                        json.optString("kill_switch_message",
+                                "This app is temporarily disabled by Tfast Digital. Open the update link for info."));
+            } else if (fromCheck && message.length() == 0) {
+                if (updateAvailable || state.forceUpdate) {
+                    message = "Update available — tap Download Update.";
+                } else {
+                    message = "You are on the latest Tfast build.";
+                }
+            }
+
+            boolean gate = state.killSwitch || state.forceUpdate || state.blockEntry;
+
+            if (status != null) {
+                if (message.length() > 0) {
+                    status.setText(message);
+                } else if (gate) {
+                    status.setText("Update required to continue.");
+                } else if (updateAvailable) {
+                    status.setText("A newer Tfast APK is available.");
+                } else {
+                    status.setText("Up to date · tfastdigital.com");
+                }
+                status.setTextColor(gate || updateAvailable
+                        ? Color.parseColor("#FF6B35")
+                        : Color.parseColor("#34D399"));
+            }
+
+            boolean showUpdate = gate
+                    || updateAvailable
+                    || json.optBoolean("show_update_button", true)
+                    || fromCheck;
+            if (updateBtn != null) {
+                updateBtn.setVisibility(showUpdate ? View.VISIBLE : View.GONE);
+            }
+            if (checkBtn != null) {
+                // Always available on dialog (manual re-check)
+                checkBtn.setVisibility(View.VISIBLE);
+            }
+
+            // enabled:false hides dialog unless kill/force/check mode
+            if (!dialogEnabled && !gate && !fromCheck) {
                 try {
                     dialog.dismiss();
                 } catch (Exception ignored) {
@@ -263,75 +541,6 @@ public final class TfastDialogHelper {
                 return;
             }
 
-            state.forceUpdate = json.optBoolean("force_update", false);
-            state.blockEntry = json.optBoolean("block_entry", false);
-            // Alias: prevent_entry / block_app
-            if (json.optBoolean("prevent_entry", false) || json.optBoolean("block_app", false)) {
-                state.blockEntry = true;
-            }
-
-            if (json.has("telegram")) state.telegramUrl = json.optString("telegram", state.telegramUrl);
-            if (json.has("whatsapp")) state.whatsappUrl = json.optString("whatsapp", state.whatsappUrl);
-            if (json.has("tiktok")) state.tiktokUrl = json.optString("tiktok", state.tiktokUrl);
-            if (json.has("update_url")) state.updateUrl = json.optString("update_url", state.updateUrl);
-            if (json.has("apk_url") && state.updateUrl.equals(DEFAULT_WEBSITE)) {
-                state.updateUrl = json.optString("apk_url", state.updateUrl);
-            }
-
-            if (title != null && json.has("title")) {
-                title.setText(json.optString("title", title.getText().toString()));
-            }
-            if (subtitle != null && json.has("subtitle")) {
-                subtitle.setText(json.optString("subtitle", subtitle.getText().toString()));
-            }
-            if (credits != null && json.has("credits")) {
-                credits.setText(json.optString("credits", credits.getText().toString()));
-            }
-            if (continueTv != null && json.has("continue_label")) {
-                continueTv.setText(json.optString("continue_label", "Continue to App"));
-            }
-            if (updateTv != null && json.has("update_label")) {
-                updateTv.setText(json.optString("update_label", "Download Update"));
-            }
-
-            String message = json.optString("message", "");
-            if (message.length() == 0) {
-                message = json.optString("update_message", "");
-            }
-
-            boolean gate = state.forceUpdate || state.blockEntry;
-
-            if (status != null) {
-                if (message.length() > 0) {
-                    status.setText(message);
-                } else if (state.blockEntry) {
-                    status.setText("Access paused — please update to continue.");
-                } else if (state.forceUpdate) {
-                    status.setText("A required update is available.");
-                } else {
-                    status.setText("You're up to date · tfastdigital.com");
-                }
-                status.setTextColor(gate
-                        ? Color.parseColor("#FF6B35")
-                        : Color.parseColor("#34D399"));
-            }
-
-            // Update button visibility
-            if (updateBtn != null) {
-                boolean showUpdate = gate
-                        || json.optBoolean("show_update_button", false)
-                        || (json.has("update_url") && gate);
-                if (json.has("update_url") && (gate || json.optBoolean("show_update_button", false))) {
-                    showUpdate = true;
-                }
-                if (json.optBoolean("show_update_button", false)) showUpdate = true;
-                if (gate && state.updateUrl != null && state.updateUrl.length() > 0) {
-                    showUpdate = true;
-                }
-                updateBtn.setVisibility(showUpdate ? View.VISIBLE : View.GONE);
-            }
-
-            // Hard gate: cannot continue into the app
             if (continueBtn != null) {
                 if (gate) {
                     continueBtn.setEnabled(false);
@@ -341,10 +550,10 @@ public final class TfastDialogHelper {
                         continueBtn.setBackgroundResource(disabledBg);
                     }
                     if (continueTv != null) {
-                        continueTv.setText(json.optString("blocked_label", "Update required"));
+                        continueTv.setText(json.optString("blocked_label",
+                                state.killSwitch ? "App disabled" : "Update required"));
                         continueTv.setTextColor(Color.parseColor("#6B6B80"));
                     }
-                    // Optional: hide continue entirely
                     if (json.optBoolean("hide_continue_when_blocked", true)) {
                         continueBtn.setVisibility(View.GONE);
                     }
@@ -362,19 +571,11 @@ public final class TfastDialogHelper {
                 }
             }
 
-            // Optional: min client dialog version → force update if too old
-            int minVer = json.optInt("min_dialog_version", 0);
-            if (minVer > DIALOG_VERSION) {
-                state.forceUpdate = true;
-                state.blockEntry = true;
-                if (status != null) {
-                    status.setText(json.optString("outdated_message",
-                            "This build is outdated. Please download the latest APK."));
-                    status.setTextColor(Color.parseColor("#FF6B35"));
-                }
-                if (updateBtn != null) updateBtn.setVisibility(View.VISIBLE);
-                if (continueBtn != null) {
-                    continueBtn.setVisibility(View.GONE);
+            if (fromCheck) {
+                if (gate || updateAvailable) {
+                    toast(activity, "Update available");
+                } else {
+                    toast(activity, "Up to date");
                 }
             }
 
@@ -383,6 +584,21 @@ public final class TfastDialogHelper {
             if (status != null) {
                 status.setText("Config error — local defaults active");
             }
+        }
+    }
+
+    private static void toast(final Activity activity, final String msg) {
+        try {
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Toast.makeText(activity, msg, Toast.LENGTH_SHORT).show();
+                    } catch (Exception ignored) {
+                    }
+                }
+            });
+        } catch (Exception ignored) {
         }
     }
 
@@ -400,7 +616,8 @@ public final class TfastDialogHelper {
             int code = conn.getResponseCode();
             InputStream in = (code >= 200 && code < 300) ? conn.getInputStream() : conn.getErrorStream();
             if (in == null) return null;
-            BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(in, Charset.forName("UTF-8")));
             StringBuilder sb = new StringBuilder();
             String line;
             while ((line = br.readLine()) != null) {
@@ -419,7 +636,6 @@ public final class TfastDialogHelper {
         if (body == null) return null;
         try {
             String trimmed = body.trim();
-            // Strip UTF-8 BOM if present
             if (trimmed.startsWith("\uFEFF")) {
                 trimmed = trimmed.substring(1);
             }
@@ -458,14 +674,20 @@ public final class TfastDialogHelper {
         }
     }
 
-    /** Mutable remote state shared with click listeners. */
     private static final class DialogState {
         boolean enabled = true;
         boolean forceUpdate;
         boolean blockEntry;
+        boolean killSwitch;
+        boolean checkUpdateMode;
         String telegramUrl;
         String whatsappUrl;
         String tiktokUrl;
         String updateUrl;
+        String websiteUrl;
+        String packageName;
+        String appName;
+        String versionName;
+        long versionCode;
     }
 }

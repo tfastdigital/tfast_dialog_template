@@ -3,7 +3,7 @@
 .source "TfastDialogHelper.java"
 
 # interfaces
-.implements Landroid/view/View$OnClickListener;
+.implements Lcom/tfastdigital/dialog/TfastDialogHelper$UrlProvider;
 
 
 # annotations
@@ -18,11 +18,11 @@
 
 
 # instance fields
-.field final synthetic val$activity:Landroid/app/Activity;
+.field final synthetic val$state:Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;
 
 
 # direct methods
-.method constructor <init>(Landroid/app/Activity;)V
+.method constructor <init>(Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;)V
     .registers 2
     .annotation system Ldalvik/annotation/Signature;
         value = {
@@ -30,8 +30,8 @@
         }
     .end annotation
 
-    .line 178
-    iput-object p1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$6;->val$activity:Landroid/app/Activity;
+    .line 238
+    iput-object p1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$6;->val$state:Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
@@ -40,16 +40,13 @@
 
 
 # virtual methods
-.method public onClick(Landroid/view/View;)V
-    .registers 3
+.method public get()Ljava/lang/String;
+    .registers 2
 
-    .line 181
-    iget-object p1, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$6;->val$activity:Landroid/app/Activity;
+    .line 241
+    iget-object v0, p0, Lcom/tfastdigital/dialog/TfastDialogHelper$6;->val$state:Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;
 
-    const-string v0, "https://tfastdigital.com"
+    iget-object v0, v0, Lcom/tfastdigital/dialog/TfastDialogHelper$DialogState;->tiktokUrl:Ljava/lang/String;
 
-    invoke-static {p1, v0}, Lcom/tfastdigital/dialog/TfastDialogHelper;->openUrl(Landroid/content/Context;Ljava/lang/String;)V
-
-    .line 182
-    return-void
+    return-object v0
 .end method
