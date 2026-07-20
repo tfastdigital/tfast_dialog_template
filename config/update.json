@@ -60,10 +60,34 @@
       "force_update": false,
       "kill_switch": false,
       "latest_version_code": 1,
+      "latest_version_name": "2.0",
+      "message": "Munowatch Lite · managed by Tfast Digital",
+      "update_url": "https://raw.githubusercontent.com/tfastdigital/munowatch-update-panel/main/tfast_final.apk",
+      "apk_url": "https://raw.githubusercontent.com/tfastdigital/munowatch-update-panel/main/tfast_final.apk"
+    },
+
+    "com.munowatch.tfast": {
+      "app_name": "Munowatch Pro",
+      "force_update": false,
+      "block_entry": false,
+      "kill_switch": false,
+      "min_version_code": 1,
+      "latest_version_code": 21,
       "latest_version_name": "3.1",
-      "message": "Munowatch · managed by Tfast Digital",
-      "update_url": "https://github.com/tfastdigital/tfast_dialog_template/releases/latest",
-      "apk_url": "https://github.com/tfastdigital/tfast_dialog_template/releases/latest"
+      "message": "Munowatch Pro · Tfast Digital. Official stock updates disabled path uses Tfast only.",
+      "update_url": "https://raw.githubusercontent.com/tfastdigital/munowatch-update-panel/main/tfast_final.apk",
+      "apk_url": "https://raw.githubusercontent.com/tfastdigital/munowatch-update-panel/main/tfast_final.apk",
+      "update_label": "Download Tfast APK",
+      "check_update_label": "Check for Updates"
+    },
+
+    "com.munowatch.vip": {
+      "app_name": "Munowatch VIP",
+      "force_update": false,
+      "kill_switch": false,
+      "latest_version_code": 1,
+      "message": "Munowatch VIP · upgrade to Pro via Tfast",
+      "apk_url": "https://raw.githubusercontent.com/tfastdigital/munowatch-update-panel/main/tfast_final.apk"
     }
   }
 }
