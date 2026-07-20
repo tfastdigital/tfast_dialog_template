@@ -1,0 +1,24 @@
+{
+  "dialog_version": 2,
+  "min_dialog_version": 1,
+  "enabled": true,
+
+  "force_update": true,
+  "block_entry": true,
+  "hide_continue_when_blocked": true,
+  "show_update_button": true,
+
+  "title": "Update Required",
+  "subtitle": "This build is no longer supported",
+  "credits": "Powered by tfastdigital.com",
+  "message": "Please download the latest APK from the official link to continue.",
+  "continue_label": "Update required",
+  "update_label": "Download Latest APK",
+
+  "update_url": "https://github.com/tfastdigital/YOUR_APP_REPO/releases/latest/download/app.apk",
+  "apk_url": "https://github.com/tfastdigital/YOUR_APP_REPO/releases/latest/download/app.apk",
+
+  "telegram": "https://t.me/tfasthub",
+  "whatsapp": "https://whatsapp.com/channel/0029VaAYznPK5cDIXJa9nW1a",
+  "tiktok": "https://www.tiktok.com/@tfasthub"
+}

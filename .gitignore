@@ -1,0 +1,7 @@
+build_tmp/
+tools_out/
+*.class
+.DS_Store
+Thumbs.db
+.idea/
+*.iml

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- All IDs are tfast_* prefixed — safe to merge into any APK -->
+    <item type="id" name="tfast_logo" />
+    <item type="id" name="tfast_title" />
+    <item type="id" name="tfast_subtitle" />
+    <item type="id" name="tfast_status" />
+    <item type="id" name="tfast_btn_telegram" />
+    <item type="id" name="tfast_btn_whatsapp" />
+    <item type="id" name="tfast_btn_tiktok" />
+    <item type="id" name="tfast_btn_update" />
+    <item type="id" name="tfast_btn_continue" />
+    <item type="id" name="tfast_credits" />
+    <item type="id" name="tfast_accent_bar" />
+</resources>

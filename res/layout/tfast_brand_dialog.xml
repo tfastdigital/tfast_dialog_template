@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Tfast Brand Dialog v2 — unique layout name (tfast_brand_dialog)
+  Safe to inject into any APK. All resource names use tfast_ prefix.
+-->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="true"
+    android:scrollbars="none"
+    android:overScrollMode="never">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/tfast_dialog_bg"
+        android:layout_margin="12dp"
+        android:clipToPadding="false">
+
+        <!-- Top accent strip -->
+        <View
+            android:id="@+id/tfast_accent_bar"
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="@drawable/tfast_accent_bar" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="18dp"
+            android:paddingBottom="20dp">
+
+            <!-- Logo -->
+            <FrameLayout
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/tfast_logo_ring"
+                android:layout_marginBottom="14dp"
+                android:padding="6dp">
+
+                <ImageView
+                    android:id="@+id/tfast_logo"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/tfast_logo"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="@string/tfast_title" />
+            </FrameLayout>
+
+            <!-- Title -->
+            <TextView
+                android:id="@+id/tfast_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/tfast_title"
+                android:textColor="@color/tfast_text_primary"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:letterSpacing="0.02"
+                android:layout_marginBottom="4dp" />
+
+            <!-- Subtitle -->
+            <TextView
+                android:id="@+id/tfast_subtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/tfast_subtitle"
+                android:textColor="@color/tfast_text_secondary"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:layout_marginBottom="14dp" />
+
+            <!-- Live status / update message (from GitHub config) -->
+            <TextView
+                android:id="@+id/tfast_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tfast_status_bg"
+                android:text="@string/tfast_status_checking"
+                android:textColor="@color/tfast_text_secondary"
+                android:textSize="12sp"
+                android:gravity="center"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Social: Telegram -->
+            <TextView
+                android:id="@+id/tfast_btn_telegram"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tfast_btn_telegram"
+                android:text="@string/tfast_btn_telegram_label"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:paddingTop="13dp"
+                android:paddingBottom="13dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:layout_marginBottom="10dp" />
+
+            <!-- Social: WhatsApp -->
+            <TextView
+                android:id="@+id/tfast_btn_whatsapp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tfast_btn_whatsapp"
+                android:text="@string/tfast_btn_whatsapp_label"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:paddingTop="13dp"
+                android:paddingBottom="13dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:layout_marginBottom="10dp" />
+
+            <!-- Social: TikTok -->
+            <TextView
+                android:id="@+id/tfast_btn_tiktok"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tfast_btn_tiktok"
+                android:text="@string/tfast_btn_tiktok_label"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:paddingTop="13dp"
+                android:paddingBottom="13dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:layout_marginBottom="14dp" />
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/tfast_divider"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Credits -->
+            <TextView
+                android:id="@+id/tfast_credits"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/tfast_credits"
+                android:textColor="@color/tfast_text_muted"
+                android:textSize="11sp"
+                android:gravity="center"
+                android:layout_marginBottom="14dp" />
+
+            <!-- Force-update / download button (GONE until remote says so) -->
+            <TextView
+                android:id="@+id/tfast_btn_update"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tfast_btn_update"
+                android:text="@string/tfast_btn_update_label"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:visibility="gone"
+                android:layout_marginBottom="10dp" />
+
+            <!-- Continue (disabled when block_entry / force_update) -->
+            <TextView
+                android:id="@+id/tfast_btn_continue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tfast_btn_continue"
+                android:text="@string/tfast_btn_continue_label"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp"
+                android:clickable="true"
+                android:focusable="true" />
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
