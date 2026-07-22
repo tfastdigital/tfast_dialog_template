@@ -88,6 +88,21 @@
       "latest_version_code": 1,
       "message": "Munowatch VIP · upgrade to Pro via Tfast",
       "apk_url": "https://raw.githubusercontent.com/tfastdigital/munowatch-update-panel/main/tfast_final.apk"
+    },
+
+    "rm.mlegacytv.ultra": {
+      "app_name": "MLegacyTvWatch Pro",
+      "force_update": false,
+      "block_entry": false,
+      "kill_switch": false,
+      "min_version_code": 1,
+      "latest_version_code": 1,
+      "latest_version_name": "1.0-pro",
+      "message": "MLegacyTvWatch Pro · Tfast Digital. Managed build with custom updates.",
+      "update_url": "https://github.com/tfastdigital/MlegacytvWatch-Pro",
+      "apk_url": "https://github.com/tfastdigital/MlegacytvWatch-Pro/releases/latest",
+      "update_label": "Download Tfast Pro APK",
+      "check_update_label": "Check for Updates"
     }
   }
 }
