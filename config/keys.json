@@ -1,5 +1,12 @@
 [
     {
+        "id": "b1462e7aa74406eb",
+        "expiresAt": "2060-01-01",
+        "Customer": "test_device",
+        "Package.name": "com.munowatch.tfast",
+        "allowOffline": true
+    },
+    {
         "id": "3fd467a0a8752b20",
         "expiresAt": "2060-01-01",
         "Customer": "tfast91382",
