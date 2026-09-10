@@ -103,6 +103,22 @@
       "apk_url": "https://github.com/tfastdigital/MlegacytvWatch-Pro/releases/latest",
       "update_label": "Download Tfast Pro APK",
       "check_update_label": "Check for Updates"
+    },
+
+    "com.munowatch.pro": {
+      "app_name": "Munowatch Pro",
+      "force_update": false,
+      "block_entry": false,
+      "kill_switch": false,
+      "mode_kill_switch": false,
+      "min_version_code": 0,
+      "latest_version_code": 28,
+      "latest_version_name": "4.8-protected",
+      "message": "Munowatch Pro · Tfast Digital build. Device activation required.",
+      "update_url": "https://github.com/tfastdigital/munowatch-update-panel",
+      "apk_url": "https://raw.githubusercontent.com/tfastdigital/munowatch-update-panel/main/munowatch_pro.apk",
+      "update_label": "Download Update",
+      "check_update_label": "Check for Updates"
     }
   }
 }
